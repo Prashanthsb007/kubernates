@@ -89,8 +89,7 @@ Step 7: Initialize Kubernetes Control Plane - This command bootstraps the Kubern
 and explicitly tells kubeadm to use Docker via cri-dockerd.
 -----------------------------------------------------------------------------------------------------------------
 
-sudo kubeadm init \
---cri-socket unix:///var/run/cri-dockerd.sock
+sudo kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock
 
 IMPORTANT:
 Copy and SAVE the "kubeadm join" command shown at the end.
