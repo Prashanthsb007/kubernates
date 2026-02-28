@@ -1,0 +1,115 @@
+🎯 SIMPLE DEPLOYMENT YAML WITH PROBES
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe-demo
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probe-demo
+  template:
+    metadata:
+      labels:
+        app: probe-demo
+    spec:
+      containers:
+      - name: app-container
+        image: nginx:1.28
+        ports:
+        - containerPort: 80
+
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 30
+
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
+
+--------------------------------------------------------------------------------------------------------------------
+🎯 Where These Paths Are Defined
+These paths are defined in the application running inside the container.
+
+Example application endpoints:
+/health
+/ready
+/startup
+These are HTTP endpoints created by the developer.
+
+Example:
+http://localhost:80/health
+http://localhost:80/ready
+http://localhost:80/startup
+Kubernetes sends requests to these endpoints.
+
+What Kubernetes Actually Does
+When you configure:
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+
+Kubernetes internally sends: GET http://PodIP:80/health
+If response:
+HTTP 200 → Healthy
+HTTP 500 / Timeout → Unhealthy
+---------------------------------------------------------------------------------------------
+🎯 What Kubernetes Actually Does
+
+When you configure:
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+
+Kubernetes internally sends: GET http://PodIP:80/health
+If response:
+HTTP 200 → Healthy
+HTTP 500 / Timeout → Unhealthy
+-----------------------------------------------------------------------------------------------
+🎯 Example Application Code (Node.js)
+
+const express = require("express");
+const app = express();
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Application is healthy");
+});
+
+app.get("/ready", (req, res) => {
+  res.status(200).send("Application is ready");
+});
+
+app.get("/startup", (req, res) => {
+  res.status(200).send("Application started");
+});
+
+app.listen(80);
+--------------------------------------------------------------------------------------------------
+🎯 Now Kubernetes probes can call:
+/health
+/ready
+/startup
+
+Very Important Interview Answer:
+Where is /health defined?
+“The /health, /ready, and /startup endpoints are implemented inside the application code. Kubernetes probes simply call these endpoints to check container health.”
