@@ -35,6 +35,7 @@ VERIFY kubectl INSTALLATION
 4.Create the Cluster
 
   eksctl create cluster --name my-eks-cluster --nodegroup-name my-worker-node --node-type t2.micro --nodes 3 --managed --region us-west-2
+  eksctl create cluster --name my-eks-cluster --nodegroup-name my-worker-node --node-type t2.medium --nodes 2 --managed --region us-east-1
 
 5.Delete The cluster
   eksctl delete cluster --name my-eks-cluster --region us-east-1
