@@ -39,6 +39,7 @@ Step - Important : Configure Docker to use systemd cgroups
 (Required for Kubernetes stability)
 --------------------------------------------------------------------------------------------
 sudo mkdir -p /etc/docker
+
 sudo tee /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
