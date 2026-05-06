@@ -1,10 +1,14 @@
 🚀 Kubernetes Cluster Setup using kubeadm (v1.29)
 
-OS        : Ubuntu 22.04
+OS        : Ubuntu 22.04----> Ubuntu 24.04
 CRI       : Docker (via cri-dockerd)
 CNI       : Flannel
 Cluster   : 1 Master + 1 Worker
 Purpose   : Stable, demo-safe Kubernetes installation
+
+Note - ❌  Ubuntu 24.04 uses Noble (not Jammy). Installing the Jammy .deb causes cri-dockerd to fail at startup.
+✅  Use the Noble .deb:  cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+
 
 ====================================================
 🔹 PART 1 — MASTER NODE SETUP
@@ -57,8 +61,11 @@ sudo systemctl restart docker
 Step 3: Install cri-dockerd (Docker CRI Adapter) - Kubernetes no longer supports Docker directly.
 cri-dockerd acts as a bridge between Kubernetes and Docker.
 -----------------------------------------------------------------------------------------------------------------
-wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
-sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+# wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+# sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+
+wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+sudo dpkg -i cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
 
 sudo systemctl daemon-reload
 sudo systemctl enable cri-docker.service
@@ -68,7 +75,7 @@ sudo systemctl start cri-docker.socket
 
 Verify CRI socket:
 ls -l /var/run/cri-dockerd.sock
-
+Expected: srw-rw---- 1 root docker ... /var/run/cri-dockerd.sock
 -----------------------------------------------------------------------------------------------------------------
 Step 4: Enable Required Kernel Modules & Networking - These kernel settings are required for container networking and pod communication.
 -----------------------------------------------------------------------------------------------------------------
@@ -148,6 +155,7 @@ Without this, nodes will remain NotReady.
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
 Wait 30–60 seconds:
+kubectl cluster-info
 kubectl get nodes
 
 Expected:
@@ -194,8 +202,13 @@ sudo systemctl restart docker
 -----------------------------------------------------------------------------------------------------------------
 Step 3: Install cri-dockerd (Worker) - Required to allow Kubernetes to communicate with Docker.
 -----------------------------------------------------------------------------------------------------------------
-wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
-sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+# wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+# sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+
+# ✅ Use Noble build for Ubuntu 24.04
+wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+sudo dpkg -i cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+
 
 sudo systemctl daemon-reload
 sudo systemctl enable cri-docker.service
@@ -274,9 +287,9 @@ If this port is blocked → worker join will TIMEOUT.
 🎯 DEMO CHECKLIST
 ====================================================
 
-✔ Ubuntu 22.04
+✔ Ubuntu 22.04--->	Ubuntu 24.04 LTS  (Noble)
 ✔ Kubernetes v1.29
-✔ Docker runtime (cri-dockerd)
+✔ Docker runtime (cri-dockerd)----->cri-dockerd v0.3.15 Noble build  (key fix for Ubuntu 24.04)
 ✔ Flannel networking
 ✔ Master + Worker joined successfully
 ✔ Stable & demo-ready
