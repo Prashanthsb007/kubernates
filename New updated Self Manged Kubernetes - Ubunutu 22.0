@@ -63,6 +63,7 @@ cri-dockerd acts as a bridge between Kubernetes and Docker.
 -----------------------------------------------------------------------------------------------------------------
 # wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
 # sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
+# ubuntu-jammy → ubuntu-noble (distro codename)
 
 wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
 sudo dpkg -i cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
