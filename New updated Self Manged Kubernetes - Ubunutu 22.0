@@ -63,10 +63,22 @@ cri-dockerd acts as a bridge between Kubernetes and Docker.
 -----------------------------------------------------------------------------------------------------------------
 # wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
 # sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
-# ubuntu-jammy → ubuntu-noble (distro codename)
+# Note: Ubuntu 24.04 (Noble) - Use tarball method.
 
-wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
-sudo dpkg -i cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+# Download the tarball (works on all Ubuntu versions)
+wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.24/cri-dockerd-0.3.24.amd64.tgz
+
+# Extract and install binary
+tar -xvf cri-dockerd-0.3.24.amd64.tgz
+sudo install -o root -g root -m 0755 cri-dockerd/cri-dockerd /usr/local/bin/cri-dockerd
+
+# Download systemd service files
+sudo wget -P /etc/systemd/system \
+  https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service \
+  https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
+
+# Fix the binary path in the service file
+sudo sed -i 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable cri-docker.service
@@ -206,10 +218,20 @@ Step 3: Install cri-dockerd (Worker) - Required to allow Kubernetes to communica
 # wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.13/cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
 # sudo dpkg -i cri-dockerd_0.3.13.3-0.ubuntu-jammy_amd64.deb
 
-# ✅ Use Noble build for Ubuntu 24.04
-wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.15/cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
-sudo dpkg -i cri-dockerd_0.3.15.3-0.ubuntu-noble_amd64.deb
+# Download the tarball (works on all Ubuntu versions)
+wget https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.24/cri-dockerd-0.3.24.amd64.tgz
 
+# Extract and install binary
+tar -xvf cri-dockerd-0.3.24.amd64.tgz
+sudo install -o root -g root -m 0755 cri-dockerd/cri-dockerd /usr/local/bin/cri-dockerd
+
+# Download systemd service files
+sudo wget -P /etc/systemd/system \
+  https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service \
+  https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
+
+# Fix the binary path in the service file
+sudo sed -i 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable cri-docker.service
