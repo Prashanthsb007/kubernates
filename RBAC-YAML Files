@@ -74,5 +74,45 @@ Because: Nodes are cluster-scoped.
 | ClusterRole        | Cluster-wide permission definition |
 | ClusterRoleBinding | Grants cluster-wide access         |
 
+-----------------------------------------------------------------------------------------------
+Example how the users get created 
+
+1️⃣ Create IAM User in AWS
+aws iam create-user --user-name dev-user
+
+2️⃣ Give EKS Access
+Example:
+aws eks create-access-entry \
+  --cluster-name my-cluster \
+  --principal-arn arn:aws:iam::123456789012:user/dev-user
+
+3️⃣ Kubernetes Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+4️⃣ RoleBinding
+Notice: name: dev-user
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: default
+subjects:
+- kind: User
+  name: dev-user
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
 
 
