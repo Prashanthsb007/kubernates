@@ -1,0 +1,208 @@
+1️⃣ DEPLOYMENT WITH RESOURCE REQUESTS & LIMITS
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.28
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2️⃣ HORIZONTAL POD AUTOSCALER (HPA)
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3️⃣ VERTICAL POD AUTOSCALER (VPA)
+
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: nginx-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deployment
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: nginx
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 500m
+        memory: 512Mi
+      controlledResources: ["cpu","memory"]
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🔥 What This HPA Does
+
+If CPU usage exceeds 70%
+→ Kubernetes automatically increases pod count
+
+Example:
+
+2 Pods → 4 Pods → 6 Pods
+
+depending on load.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🔥 What This VPA Does
+
+If application needs more CPU/Memory:
+→ Kubernetes automatically increases resource requests/limits
+
+Example:
+
+cpu:
+100m → 200m → 300m
+
+memory:
+128Mi → 256Mi → 512Mi
+
+depending on workload.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+⚠️ IMPORTANT HPA vs VPA NOTE
+
+HPA:
+Scales number of Pods
+
+VPA:
+Scales CPU/Memory of Pods
+
+Usually:
+Do NOT use HPA and VPA together on same CPU/Memory metrics in production.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+✅ Important Requirement
+
+HPA and VPA work only if:
+metrics-server
+
+  is installed.
+
+Check:
+kubectl get deployment metrics-server -n kube-system
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+✅ Verify HPA
+kubectl get hpa
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+✅ Verify VPA
+kubectl get vpa
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+✅ Watch HPA Autoscaling Live
+kubectl get hpa -w
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+✅ Watch VPA Recommendations
+kubectl describe vpa nginx-vpa
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🚀 Generate Load for Testing
+kubectl run -i --tty load-generator --rm --image=busybox -- /bin/sh
+
+Inside pod:
+while true; do wget -q -O- http://nginx-service; done
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🔥 CLUSTER AUTOSCALER
+
+HPA:
+Creates more Pods
+
+But if cluster has NO resources available:
+Pods become Pending.
+
+Cluster Autoscaler:
+Automatically adds more worker nodes.
+
+Example:
+2 Nodes → 4 Nodes → 6 Nodes
+when cluster capacity becomes insufficient.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🔥 Cluster Autoscaler Flow
+
+High CPU Load
+        ↓
+HPA creates more Pods
+        ↓
+No node capacity available
+        ↓
+Pods become Pending
+        ↓
+Cluster Autoscaler detects Pending Pods
+        ↓
+New EC2 worker nodes created
+        ↓
+Pending Pods scheduled successfully
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+🔥 Super Important Interview Point
+
+HPA:
+Scales Pods
+
+VPA:
+Scales Pod CPU/Memory
+
+Cluster Autoscaler:
+Scales Worker Nodes
