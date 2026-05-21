@@ -194,6 +194,22 @@ New EC2 worker nodes created
         ↓
 Pending Pods scheduled successfully
 
+Note
+1. Install metrics-server
+2. Install Cluster Autoscaler
+3. Attach IAM policy
+4. Enable nodegroup auto scaling
+5. Add ASG discovery tags
+
+eksctl create cluster \
+--name my-eks-cluster \
+--nodegroup-name my-worker-node \
+--node-type t2.medium \
+--nodes 2 \
+--nodes-min 2 \
+--nodes-max 6 \
+--managed \
+--region us-east-1
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 🔥 Super Important Interview Point
