@@ -14,7 +14,6 @@ spec:
       labels:
         app: login
     spec:
-
       initContainers:
       - name: wait-for-db
         image: busybox
@@ -29,7 +28,6 @@ spec:
             sleep 5                        # Wait 5 seconds before trying again
           done                             # Repeat the loop until MongoDB becomes reachable
           echo "MongoDB is ready!"         # Repeat the loop until MongoDB becomes reachable
-
       containers:
       - name: login-app
         image: nginx:1.28
