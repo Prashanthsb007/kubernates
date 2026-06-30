@@ -290,7 +290,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: nginx
@@ -320,7 +320,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 10 # tells deployment to run 2 pods matching the template
+  replicas: 5 # tells deployment to run 2 pods matching the template
   selector:
     matchLabels:
       app: nginx
