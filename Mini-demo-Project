@@ -1,4 +1,4 @@
-Now we move from local Docker → ECR → Kubernetes (EKS)
+Now we move from local Docker → ECR → Kubernetes (EKS) - added for demo
 
 1️⃣ Deployment YAML (ECR Image)
 nginx-demo-deployment.yaml
