@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'my-web-app'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pulls automatically from the linked git repository
+                checkout scm 
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                echo "Building ${env.APP_NAME}..."
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running automated test suites...'
+                sh 'npm test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying artifact to the staging environment...'
+                sh './deploy.sh'
+            }
+        }
+    }
+
+    // Runs after the stages complete
+    post {
+        always {
+            echo 'Cleaning up the temporary build workspace...'
+            deleteDir() // Cleans up the directory
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Sending alerts...'
+        }
+    }
+}
