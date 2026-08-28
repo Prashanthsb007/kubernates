@@ -13,11 +13,11 @@ Create instance:
    Make it executable:
    chmod +x kubectl
 
-Move to user binary directory:
+# Move to user binary directory: - puts it in a standard location for user-installed command-line programs:
    mkdir -p ~/.local/bin
    mv ./kubectl ~/.local/bin/kubectl
 
-ADD kubectl TO PATH (IMPORTANT)
+ADD kubectl TO PATH (IMPORTANT) - It adds ~/.local/bin to your PATH, so you can run kubectl from any directory by simply typing kubectl
    echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.bashrc
    source ~/.bashrc
 
