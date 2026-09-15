@@ -40,6 +40,7 @@ VERIFY kubectl INSTALLATION
 
 5.Delete The cluster
   eksctl delete cluster --name my-eks-cluster --region us-east-1
+eksctl delete cluster --name demo --region us-east-2
 
 6. In any issues
    aws eks update-kubeconfig --region us-east-1 --name my-eks-cluster
