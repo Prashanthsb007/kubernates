@@ -10,3 +10,20 @@ spec:
     image: nginx
     ports:
     - containerPort: 80
+
+------------------------------------
+
+## Adding this file for git demo
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo01
+  labels:
+    name: demo01
+spec:
+  containers:
+  - name: demo
+    image: demo
+    ports:
+    - containerPort: 80
